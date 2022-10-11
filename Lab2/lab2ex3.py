@@ -6,10 +6,10 @@ import random
 import arviz as az
 coin1s=np.random.binomial(10, 0.5, 100)
 coin2s=np.random.binomial(10, 0.3, 100)
-bb=np.zeros(100)
-bs=np.zeros(100)
-sb=np.zeros(100)
-ss=np.zeros(100)
+bb=np.zeros(100,dtype=(np.int32))
+bs=np.zeros(100,dtype=(np.int32))
+sb=np.zeros(100,dtype=(np.int32))
+ss=np.zeros(100,dtype=(np.int32))
 coin1b=[]
 coin2b=[]
 for i in range(100):
@@ -33,6 +33,6 @@ for i in range(100):
                 coin2b[i]-=1                                         #stema 1 cu banul 2
                 sb[i]+=1
             coin1s[i]-=1
-az.plot_posterior({"bb":bb,"sb":sb,"bs":bs,"ss":ss})
+az.plot_posterior({"bb": bb,"sb":sb,"bs":bs,"ss":ss})
 print(bb,sb,bs,ss)
 plt.show()
