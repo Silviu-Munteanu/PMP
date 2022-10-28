@@ -30,7 +30,7 @@ cpd_P1call = TabularCPD(
     variable="P2call",
     variable_card=2,
     values=[[0.95, 0.75, 0.6, 0.3, 0.03],[0.05,0.25,0.4,0.7,0.97]],
-    evidence=["P1draw","P1call"],
+    evidence=["P1draw"],
     evidence_card=[5]
 )
 
