@@ -44,21 +44,39 @@ if __name__ == '__main__':
      #momage=[(i-avg_momage) / stdev_momage for i in momage]
      #educ_cat=[(i-avg_momage) / stdev_educ_cat for i in educ_cat]
      model=pm.Model()
-     print("ceva")
      with model:
           alpha = pm.Normal("alpha", mu=avg_ppvt, sigma=stdev_ppvt)
           beta = pm.Normal("beta", mu=avg_momage, sigma=stdev_momage)
           sigma = pm.HalfNormal("sigma", sigma=stdev_ppvt)
-
           # Expected value of outcome
           mu = pm.Deterministic('μ', alpha + beta * momage)
-
           # Likelihood (sampling distribution) of observations
           Y_obs = pm.Normal("Y_obs", mu=mu, sigma=sigma, observed=ppvt)
-          idata_g = pm.sample(1000, tune=1000, return_inferencedata=True,chains=1)
+          idata_g = pm.sample(1000, tune=1000, return_inferencedata=True)
      map_estimate = pm.find_MAP(model=model)
      print(map_estimate)
-     #Vizualizarea nu functioneaza din cauza liniei 58, dar din moment ce Beta >0 in map_estimate, linia trasata are un comportament "cescator"
+     ppc = pm.sample_posterior_predictive(idata_g, samples=100, model=model)
+     plt.plot(momage, alpha + beta * momage, c='k',
+              label=f'ppvt = {alpha:.2f} + {beta:.2f} * momage')
+     az.plot_hdi(momage, ppc['y_pred'], hdi_prob=0.97, color='gray')
+     # Vizualizarea nu functioneaza, dar din moment ce Beta >0, in map_estimate, linia trasata are un comportament "cescator"
      # deci mamele cu o varsta mai inaintata au copii cu pptv mai mare
-     az.plot_posterior(idata_g)
+     model_educ=pm.Model()
+     with model_educ:
+         alpha = pm.Normal("alpha", mu=avg_ppvt, sigma=stdev_ppvt)
+         beta = pm.Normal("beta", mu=avg_educ_cat, sigma=stdev_educ_cat)
+         sigma = pm.HalfNormal("sigma", sigma=stdev_ppvt)
+         # Expected value of outcome
+         mu = pm.Deterministic('μ', alpha + beta * educ_cat)
+         # Likelihood (sampling distribution) of observations
+         Y_obs = pm.Normal("Y_obs", mu=mu, sigma=sigma, observed=ppvt)
+         idata_g = pm.sample(1000, tune=1000, return_inferencedata=True)
+     map_estimate =pm.find_MAP(model=model_educ)
+     print(map_estimate)
+     ppc = pm.sample_posterior_predictive(idata_g, samples=100, model=model_educ)
+     plt.plot(model_educ, alpha + beta * model_educ, c='k',
+              label=f'ppvt = {alpha:.2f} + {beta:.2f} * educ_cat')
+     az.plot_hdi(momage, ppc['ppvt_pred'], hdi_prob=0.97, color='gray')
+     #Ca la punctul anterior, Beta=5, deci beta=0 in map_estimate, deci mamele cu categorie de educatie mai mare au copii cu ppvt mai mare
+     #az.plot_posterior(idata_g)
      plt.show()
