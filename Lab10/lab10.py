@@ -42,5 +42,5 @@ if __name__ == '__main__':
                            ic="loo", scale="deviance")
         print(waic_l)
         print(loo_l)
-        #Pentru 100 samples si 100 tune modelul cu 4 distributii a avut cele mai bune rezultate 
+        #Pentru 100 samples si 100 tune modelul cu 4 distributii a avut cele mai bune rezultate atat la waic cat si la loo
     plt.show()
